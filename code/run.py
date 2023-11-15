@@ -179,7 +179,7 @@ CREATE DATASETS FOR TRAINING
 
 
 
-def pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS):
+def pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS, MAX_NUM_CONFIGS, MAX_KEEP_NODES, BATCH_SIZE, layout_data_root_dir):
   layout_npz_dataset = layout_data.get_npz_dataset(
       layout_data_root_dir,
       min_train_configs=CONFIGS_PER_GRAPH,
@@ -326,11 +326,11 @@ def main(source, search, **kwargs):
   # MAX_KEEP_NODES = 100  # Useful for dropout.
   # MAX_TRAIN_CONFIGS = 20
 
-  BATCH_SIZE = batch_size  # Number of graphs per batch.
-  CONFIGS_PER_GRAPH = configs_per_graph  # Number of configurations (features and target values) per graph.
-  MAX_NUM_CONFIGS = max_num_configs # maximum number of configurations to filter for
-  MAX_KEEP_NODES = max_keep_nodes  # Useful for dropout.
-  MAX_TRAIN_CONFIGS = max_train_configs
+  BATCH_SIZE = kwargs['batch_size']  # Number of graphs per batch.
+  CONFIGS_PER_GRAPH = kwargs['configs_per_graph']  # Number of configurations (features and target values) per graph.
+  MAX_NUM_CONFIGS = kwargs['max_num_configs'] # maximum number of configurations to filter for
+  MAX_KEEP_NODES = kwargs['max_keep_nodes']  # Useful for dropout.
+  MAX_TRAIN_CONFIGS = kwargs['max_train_configs']
 
   # edges "sampled_config" and "sampled_feed" (or, "con50fig" and "feed")
   early_stop = 5  # If validation OPA did not increase in this many epochs, terminate training.
@@ -338,7 +338,7 @@ def main(source, search, **kwargs):
   epochs = 1  # Total number of training epochs.
 
   # pull the data
-  layout_npz_dataset, layout_train_ds, layout_valid_ds = pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS)
+  layout_npz_dataset, layout_train_ds, layout_valid_ds = pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS, MAX_NUM_CONFIGS, MAX_KEEP_NODES, BATCH_SIZE, layout_data_root_dir)
   model = create_model(CONFIGS_PER_GRAPH, layout_npz_dataset)
   model, train_loss, train_opa, val_loss, val_opa, best_params = train_model(model, epochs, layout_train_ds, layout_valid_ds)
 

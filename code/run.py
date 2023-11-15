@@ -308,42 +308,47 @@ BEGIN RUNNING CODE!!!
 THERE ARE SETTINGS AND HYPERPARAMETERES
 """
 
-# need to download npz
-# LAYOUT_DATA_ROOT = '/npz/layout'
-LAYOUT_DATA_ROOT = '/content/drive/MyDrive/npz 2/layout'
-# SOURCE = 'xla'  # Can be "xla" or "nlp"
-SOURCE = 'nlp'  # Can be "xla" or "nlp"
-# SEARCH = 'random'  # Can be "random" or "default"
-SEARCH = 'default'  # Can be "random" or "default"
 
-layout_data_root_dir = os.path.join(
-      os.path.expanduser(LAYOUT_DATA_ROOT), SOURCE, SEARCH)
+def main(source, search, **kwargs):
+  # need to download npz
+  # LAYOUT_DATA_ROOT = '/npz/layout'
+  LAYOUT_DATA_ROOT = '/content/drive/MyDrive/npz 2/layout'
+  SOURCE = source  # Can be "xla" or "nlp"
+  SEARCH = search  # Can be "random" or "default"
 
-# Batch size information.
-BATCH_SIZE = 10  # Number of graphs per batch.
-CONFIGS_PER_GRAPH = 2  # Number of configurations (features and target values) per graph.
-MAX_NUM_CONFIGS = 20 # maximum number of configurations to filter for
-MAX_KEEP_NODES = 100  # Useful for dropout.
-MAX_TRAIN_CONFIGS = 20
-# `MAX_KEEP_NODES` is (or, is not) useful for Segment Dropout, if model uses
-# edges "sampled_config" and "sampled_feed" (or, "config" and "feed")
-early_stop = 5  # If validation OPA did not increase in this many epochs, terminate training.
-best_params = None  # Stores parameters corresponding to best validation OPA, to restore to them after training.
-epochs = 1  # Total number of training epochs.
+  layout_data_root_dir = os.path.join(
+        os.path.expanduser(LAYOUT_DATA_ROOT), SOURCE, SEARCH)
+
+  # Batch size information.
+  # BATCH_SIZE = 10  # Number of graphs per batch.
+  # CONFIGS_PER_GRAPH = 2  # Number of configurations (features and target values) per graph.
+  # MAX_NUM_CONFIGS = 20 # maximum number of configurations to filter for
+  # MAX_KEEP_NODES = 100  # Useful for dropout.
+  # MAX_TRAIN_CONFIGS = 20
+
+  BATCH_SIZE = batch_size  # Number of graphs per batch.
+  CONFIGS_PER_GRAPH = configs_per_graph  # Number of configurations (features and target values) per graph.
+  MAX_NUM_CONFIGS = max_num_configs # maximum number of configurations to filter for
+  MAX_KEEP_NODES = max_keep_nodes  # Useful for dropout.
+  MAX_TRAIN_CONFIGS = max_train_configs
+
+  # edges "sampled_config" and "sampled_feed" (or, "con50fig" and "feed")
+  early_stop = 5  # If validation OPA did not increase in this many epochs, terminate training.
+  best_params = None  # Stores parameters corresponding to best validation OPA, to restore to them after training.
+  epochs = 1  # Total number of training epochs.
+
+  # pull the data
+  layout_npz_dataset, layout_train_ds, layout_valid_ds = pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS)
+  model = create_model(CONFIGS_PER_GRAPH, layout_npz_dataset)
+  model, train_loss, train_opa, val_loss, val_opa, best_params = train_model(model, epochs, layout_train_ds, layout_valid_ds)
 
 
-# pull the data
-layout_npz_dataset, layout_train_ds, layout_valid_ds = pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS)
-model = create_model(CONFIGS_PER_GRAPH, layout_npz_dataset)
-model, train_loss, train_opa, val_loss, val_opa, best_params = train_model(model, epochs, layout_train_ds, layout_valid_ds)
+  _INFERENCE_CONFIGS_BATCH_SIZE = 50
+  # _INFERENCE_CONFIGS_BATCH_SIZE = 100
 
+  folder_path = '/content/drive/MyDrive/tpu_graphs/models/'
+  output_csv_filename = f'inference_layout_{SOURCE}_{SEARCH}.csv'
+  output_csv_filename = folder_path + output_csv_filename
 
-_INFERENCE_CONFIGS_BATCH_SIZE = 50
-# _INFERENCE_CONFIGS_BATCH_SIZE = 100
-
-folder_path = '/content/drive/MyDrive/tpu_graphs/models/'
-output_csv_filename = f'inference_layout_{SOURCE}_{SEARCH}.csv'
-output_csv_filename = folder_path + output_csv_filename
-
-test_rankings = run_inference(model, _INFERENCE_CONFIGS_BATCH_SIZE, layout_npz_dataset)
-write_output(test_rankings, output_csv_filename)
+  test_rankings = run_inference(model, _INFERENCE_CONFIGS_BATCH_SIZE, layout_npz_dataset)
+  write_output(test_rankings, output_csv_filename)

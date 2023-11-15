@@ -294,7 +294,7 @@ def run_inference(model, _INFERENCE_CONFIGS_BATCH_SIZE, layout_npz_dataset):
       test_rankings.append((graph_id, sorted_indices))
   return test_rankings
 
-def write_output(test_rankings, output_csv_filename):
+def write_output(test_rankings, output_csv_filename, SOURCE, SEARCH):
     with tf.io.gfile.GFile(output_csv_filename, 'w') as fout:
         fout.write('ID,TopConfigs\n')
         for graph_id, ranks in test_rankings:
@@ -351,4 +351,4 @@ def main(source, search, **kwargs):
   output_csv_filename = folder_path + output_csv_filename
 
   test_rankings = run_inference(model, _INFERENCE_CONFIGS_BATCH_SIZE, layout_npz_dataset)
-  write_output(test_rankings, output_csv_filename)
+  write_output(test_rankings, output_csv_filename, SOURCE, SEARCH)

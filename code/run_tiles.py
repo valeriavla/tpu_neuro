@@ -203,7 +203,7 @@ def _mlp(dims, hidden_activation, l2reg=1e-4, use_bias=True):
 CREATE DATASETS FOR TRAINING
 """
 
-def pull_data(CONFIGS_PER_GRAPH, MAX_NUM_CONFIGS, MAX_KEEP_NODES, BATCH_SIZE, tile_data_root_dir):
+def pull_data(CONFIGS_PER_GRAPH, MAX_KEEP_NODES, BATCH_SIZE, tile_data_root_dir):
   tiles_npz_dataset = tile_data.get_npz_dataset(
       tile_data_root_dir,
       min_train_configs=CONFIGS_PER_GRAPH,
@@ -358,7 +358,7 @@ def main(source, search, **kwargs):
   epochs = 1  # Total number of training epochs.
 
   # pull the data
-  tiles_npz_dataset, tile_train_ds, tile_valid_ds = pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS, MAX_NUM_CONFIGS, MAX_KEEP_NODES, BATCH_SIZE, tile_data_root_dir)
+  tiles_npz_dataset, tile_train_ds, tile_valid_ds = pull_data(CONFIGS_PER_GRAPH,MAX_KEEP_NODES, BATCH_SIZE, tile_data_root_dir)
   model = create_model(CONFIGS_PER_GRAPH, tiles_npz_dataset)
   model, train_loss, train_opa, val_loss, val_opa, best_params = train_model(model, epochs, tile_train_ds, tile_valid_ds)
 

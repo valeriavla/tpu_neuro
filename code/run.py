@@ -346,7 +346,7 @@ def main(source, search, **kwargs):
   _INFERENCE_CONFIGS_BATCH_SIZE = 50
   # _INFERENCE_CONFIGS_BATCH_SIZE = 100
 
-  folder_path = '/content/drive/MyDrive/tpu_graphs/models/'
+  folder_path = '/content/drive/MyDrive/tpu_graphs/outputcsvs/'
   output_csv_filename = f'inference_layout_{SOURCE}_{SEARCH}.csv'
   output_csv_filename = folder_path + output_csv_filename
 

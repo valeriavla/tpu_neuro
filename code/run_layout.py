@@ -70,6 +70,12 @@ class ResModel(tf.keras.Model):
         config_features: tf.Tensor,
         graph: tfgnn.GraphTensor, num_configs: int,
         edgeset_prefix='') -> tf.Tensor:
+        """implements the full computation within a GNN layer:
+        obtains adjacency Matrices and normalizes them, 
+        transforms and normalizes nodes and configuration.
+        applies the Pre-processing MLP and performs the Graph Convolution Operation.
+        """
+    
         adj_op_op = implicit.AdjacencyMultiplier(
             graph, edgeset_prefix+'feed')  # op->op
         adj_config = implicit.AdjacencyMultiplier(
@@ -96,6 +102,11 @@ class ResModel(tf.keras.Model):
     def forward(
         self, graph: tfgnn.GraphTensor, num_configs: int,
         backprop=True) -> tf.Tensor:
+        """
+        Overall forward pass within the embedding layer,
+        the node-level forward pass (_node_level_forward),
+        and the final global pooling and post-processing stages.
+        """
         graph = self._op_embedding(graph)
 
         config_features = graph.node_sets['nconfig']['feats']
@@ -158,8 +169,6 @@ def _mlp(dims, hidden_activation, l2reg=1e-4, use_bias=True):
         use_bias=use_bias))
   return tf.keras.Sequential(layers)
 
-
-
 """
   Layout Training Pipeline
   PARAMETERS
@@ -172,12 +181,9 @@ def _mlp(dims, hidden_activation, l2reg=1e-4, use_bias=True):
     - SEARCH: can be 'random' or 'default'
   """
 
-
 """
 CREATE DATASETS FOR TRAINING
 """
-
-
 
 def pull_data(CONFIGS_PER_GRAPH, MAX_TRAIN_CONFIGS, MAX_NUM_CONFIGS, MAX_KEEP_NODES, BATCH_SIZE, layout_data_root_dir):
   layout_npz_dataset = layout_data.get_npz_dataset(
@@ -301,13 +307,10 @@ def write_output(test_rankings, output_csv_filename, SOURCE, SEARCH):
             fout.write(f'layout:{SOURCE}:{SEARCH}:{graph_id},{ranks}\n')
     print('\n\n   ***  Wrote', output_csv_filename, '\n\n')
 
-
-
 """
 BEGIN RUNNING CODE!!!
 THERE ARE SETTINGS AND HYPERPARAMETERES
 """
-
 
 def main(source, search, **kwargs):
   # need to download npz

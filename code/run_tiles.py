@@ -358,7 +358,8 @@ def main(source, search, **kwargs):
   epochs = 1  # Total number of training epochs.
 
   # pull the data
-  tiles_npz_dataset, tile_train_ds, tile_valid_ds = pull_data(CONFIGS_PER_GRAPH,MAX_KEEP_NODES, BATCH_SIZE, tile_data_root_dir)
+  
+  tiles_npz_dataset, tile_train_ds, tile_valid_ds = pull_data(CONFIGS_PER_GRAPH, MAX_KEEP_NODES, BATCH_SIZE, tile_data_root_dir)
   model = create_model(CONFIGS_PER_GRAPH, tiles_npz_dataset)
   model, train_loss, train_opa, val_loss, val_opa, best_params = train_model(model, epochs, tile_train_ds, tile_valid_ds)
 

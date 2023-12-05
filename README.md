@@ -1,7 +1,7 @@
 # tpu_neuro
 
 ## Competition and Link
-Google kaggle competition on TPU performing metrics.
+Google kaggle competition on TPU performing metrics.\
 [Link](https://www.kaggle.com/competitions/predict-ai-model-runtime/overview) to the competition.
 
 ## Description of Project

@@ -1,4 +1,4 @@
-# tpu_neuro
+# TPU Runtime Prediction Using GNNs
 
 ## Competition and Link
 Google kaggle competition on TPU performing metrics.\
